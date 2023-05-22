@@ -72,4 +72,4 @@ app.post('/inbound', jsonParser, async (req, res) => {
 })
 
 const port = process.env.PORT || 3000;
-app.listen(port)
+app.listen(port, () => console.log(`WhatsApp to Dall-e app listening on port ${port}!`))
