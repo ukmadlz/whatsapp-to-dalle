@@ -11,6 +11,9 @@ const app = express()
 
 const jsonParser = bodyParser.json()
 
+app.get('/', (req, res) => {
+  res.json({})
+})
 app.post('/inbound', jsonParser, async (req, res) => {
   const infobip = new Infobip({
     baseUrl: process.env.INFOBIP_BASE_URL,
