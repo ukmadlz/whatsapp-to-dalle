@@ -31,6 +31,24 @@ app.post('/inbound', jsonParser, async (req, res) => {
   const { results } = req.body;
   res.send(Promise.all(results.map(async (value) => {
     try {
+      const sendCoupon = async (value, coupon) => {
+        await infobip.channels.whatsapp.send({
+          type: 'text',
+          from: value.to,
+          to: value.from,
+          content: {
+            text: 'You can apply your $100 coupon at https://portal.infobip.com/referrals and your code is:',
+          },
+        });
+        await infobip.channels.whatsapp.send({
+          type: 'text',
+          from: value.to,
+          to: value.from,
+          content: {
+            text: coupon,
+          },
+        });
+      }
       await infobip.channels.whatsapp.markAsRead(value.to, value.messageId);
       const content = value.message.text;
       if(content == "Hey Infobip! I’d like $100 of Infobip credits, please" ) {
@@ -70,14 +88,15 @@ app.post('/inbound', jsonParser, async (req, res) => {
                 } else {
                   const row = result.rows[0];
                   client.query("UPDATE coupons SET cellphone = $1 WHERE id = $2", [cellphone, row.id], (err, result) => {
-                    infobip.channels.whatsapp.send({
-                      type: 'text',
-                      from: value.to,
-                      to: value.from,
-                      content: {
-                        text: `Your coupon code is ${row.coupon}`,
-                      },
-                    });
+                    sendCoupon (value, row.coupon);
+                    // infobip.channels.whatsapp.send({
+                    //   type: 'text',
+                    //   from: value.to,
+                    //   to: value.from,
+                    //   content: {
+                    //     text: `Your coupon code is ${row.coupon}`,
+                    //   },
+                    // });
                     client.end((err) => {
                       if (err) throw err;
                     });
@@ -86,14 +105,15 @@ app.post('/inbound', jsonParser, async (req, res) => {
               });
             } else {
               const row = result.rows[0];
-              infobip.channels.whatsapp.send({
-                type: 'text',
-                from: value.to,
-                to: value.from,
-                content: {
-                  text: `Your coupon code is ${row.coupon}`,
-                },
-              });
+              sendCoupon (value, row.coupon);
+              // infobip.channels.whatsapp.send({
+              //   type: 'text',
+              //   from: value.to,
+              //   to: value.from,
+              //   content: {
+              //     text: `Your coupon code is ${row.coupon}`,
+              //   },
+              // });
               client.end((err) => {
                 if (err) throw err;
               });
