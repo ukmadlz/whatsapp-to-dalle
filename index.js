@@ -89,14 +89,6 @@ app.post('/inbound', jsonParser, async (req, res) => {
                   const row = result.rows[0];
                   client.query("UPDATE coupons SET cellphone = $1 WHERE id = $2", [cellphone, row.id], (err, result) => {
                     sendCoupon (value, row.coupon);
-                    // infobip.channels.whatsapp.send({
-                    //   type: 'text',
-                    //   from: value.to,
-                    //   to: value.from,
-                    //   content: {
-                    //     text: `Your coupon code is ${row.coupon}`,
-                    //   },
-                    // });
                     client.end((err) => {
                       if (err) throw err;
                     });
@@ -106,14 +98,6 @@ app.post('/inbound', jsonParser, async (req, res) => {
             } else {
               const row = result.rows[0];
               sendCoupon (value, row.coupon);
-              // infobip.channels.whatsapp.send({
-              //   type: 'text',
-              //   from: value.to,
-              //   to: value.from,
-              //   content: {
-              //     text: `Your coupon code is ${row.coupon}`,
-              //   },
-              // });
               client.end((err) => {
                 if (err) throw err;
               });
