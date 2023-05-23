@@ -33,7 +33,8 @@ app.post('/inbound', jsonParser, async (req, res) => {
     try {
       await infobip.channels.whatsapp.markAsRead(value.to, value.messageId);
       const content = value.message.text;
-      if(content === "Hey Infobip! I'd like $100 of Infobip credits, please" ) {
+      console.log(content)
+      if(content == "Hey Infobip! I'd like $100 of Infobip credits, please" ) {
         const connectionUrl = new URL(process.env.DATABASE_URL);
         connectionUrl.search = "";
         const pgConfig = {
