@@ -65,7 +65,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                     },
                   });
                   client.end(function (err) {
-                    res.json({ result })
+                    res.json({ })
                     if (err) throw err;
                   });
                 } else {
@@ -80,7 +80,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                       },
                     });
                     client.end(function (err) {
-                      res.json({ result })
+                      res.json({ })
                       if (err) throw err;
                     });
                   });
@@ -97,7 +97,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                 },
               });
               client.end(function (err) {
-                res.json({ result })
+                res.json({ })
                 if (err) throw err;
               });
             }
