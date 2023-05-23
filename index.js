@@ -64,8 +64,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                       text: `We have run out of coupons, please chat to someone at the booth`,
                     },
                   });
-                  client.end(function (err) {
-                    res.json({ })
+                  client.end((err) => {
                     if (err) throw err;
                   });
                 } else {
@@ -79,8 +78,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                         text: `Your coupon code is ${row.coupon}`,
                       },
                     });
-                    client.end(function (err) {
-                      res.json({ })
+                    client.end((err) => {
                       if (err) throw err;
                     });
                   });
@@ -96,8 +94,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                   text: `Your coupon code is ${row.coupon}`,
                 },
               });
-              client.end(function (err) {
-                res.json({ })
+              client.end((err) => {
                 if (err) throw err;
               });
             }
