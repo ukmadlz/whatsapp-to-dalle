@@ -69,7 +69,8 @@ app.post('/inbound', jsonParser, async (req, res) => {
                     if (err) throw err;
                   });
                 } else {
-                  client.query("UPDATE coupons SET cellphone = $1 WHERE id = $2", [cellphone, result.rows[0].id], (err, result) => {
+                  const row = result.rows[0];
+                  client.query("UPDATE coupons SET cellphone = $1 WHERE id = $2", [cellphone, row.id], (err, result) => {
                     infobip.channels.whatsapp.send({
                       type: 'text',
                       from: value.to,
