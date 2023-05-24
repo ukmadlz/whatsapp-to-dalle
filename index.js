@@ -1,9 +1,8 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const fs = require('fs');
 const pg = require('pg');
-const url = require('url');
+const path = require('path');
 const { Infobip, AuthType } =  require('@infobip-api/sdk');
 const { Configuration, OpenAIApi } = require('openai');
 dotenv.config();
@@ -14,9 +13,6 @@ const app = express()
 
 const jsonParser = bodyParser.json()
 
-app.get('/', async (req, res) => {
-  res.json({});
-})
 app.post('/inbound', jsonParser, async (req, res) => {
   const infobip = new Infobip({
     baseUrl: process.env.INFOBIP_BASE_URL,
@@ -157,7 +153,8 @@ app.post('/inbound', jsonParser, async (req, res) => {
       return error
     }
   })))
-})
+});
+app.use('/', express.static(path.join(__dirname, 'public')));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`WhatsApp to Dall-e app listening on port ${port}!`))
