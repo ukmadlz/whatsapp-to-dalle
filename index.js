@@ -123,12 +123,22 @@ app.post('/inbound', jsonParser, async (req, res) => {
         // If it doesn't, get the image and store
         if(searchResult.total_count<1) {
           // Generate image
-          const response = await openai.createImage({
-            prompt: content,
-            n: 1,
-            size: "512x512",
-          });
-          image_url = response.data.data[0].url;
+          try {
+            const response = await openai.createImage({
+              prompt: content,
+              n: 1,
+              size: "512x512",
+            });
+            image_url = response.data.data[0].url;
+          } catch (err) {
+            console.error(err);
+            const response = await openai.createImage({
+              prompt: 'random rick astley',
+              n: 1,
+              size: "512x512",
+            });
+            image_url = response.data.data[0].url;
+          }
           // Upload to Cloudinary
           await cloudinary.v2.uploader.upload(image_url, {
             resource_type: "image", 
