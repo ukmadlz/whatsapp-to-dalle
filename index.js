@@ -113,7 +113,10 @@ app.post('/inbound', jsonParser, async (req, res) => {
           });
         }
         // Simplified Public ID for Cloudinary
-        const publicId = 'whatsapp_dalle/'+content.toLowerCase().replaceAll(/[^A-Za-z0-9]+/ig, '_');
+        const publicId = 'whatsapp_dalle/'
+          +((new Date()).toISOString().split('T')[0])
+          +'/'
+          +content.toLowerCase().replaceAll(/[^A-Za-z0-9]+/ig, '_');
         // Check if the image already exists
         const searchResult = await cloudinary.v2.search
           .expression(`public_id:${publicId}`)
