@@ -27,13 +27,13 @@ app.post('/inbound', jsonParser, async (req, res) => {
   const { results } = req.body;
   res.send(Promise.all(results.map(async (value) => {
     try {
-      const sendCoupon = async (value, coupon) => {
+      const sendCoupon = async (value, coupon, coupon_value) => {
         await infobip.channels.whatsapp.send({
           type: 'text',
           from: value.to,
           to: value.from,
           content: {
-            text: 'You can apply your $100 coupon at https://portal.infobip.com/referrals and your code is:',
+            text: `You can apply your ${coupon_value} coupon at https://portal.infobip.com/referrals and your code is:`,
           },
         });
         await infobip.channels.whatsapp.send({
@@ -47,7 +47,10 @@ app.post('/inbound', jsonParser, async (req, res) => {
       }
       await infobip.channels.whatsapp.markAsRead(value.to, value.messageId);
       const content = value.message.text;
-      if(content == "Hey Infobip! I’d like $100 of Infobip credits, please" ) {
+      if(process.env.DATABASE_URL && (
+        content == "Hey Infobip! I’d like $100 of Infobip credits, please"
+        || content.toLowerCase() == "coupon please"
+      )) {
         const connectionUrl = new URL(process.env.DATABASE_URL);
         connectionUrl.search = "";
         const pgConfig = {
@@ -62,11 +65,11 @@ app.post('/inbound', jsonParser, async (req, res) => {
         client.connect((err) =>  {
           if (err) throw err;
           const cellphone = value.from;
-          client.query("SELECT id, coupon FROM coupons WHERE cellphone = $1 ORDER BY id ASC LIMIT 1", [cellphone], (err, result) => {
+          client.query("SELECT id, coupon, coupon_value FROM coupons_meetups WHERE cellphone = $1 ORDER BY id ASC LIMIT 1", [cellphone], (err, result) => {
             if (err) throw err;
       
             if(result.rows.length < 1) {
-              client.query("SELECT id, coupon FROM coupons WHERE cellphone IS NULL ORDER BY id ASC LIMIT 1", [], (err, result) => {
+              client.query("SELECT id, coupon, coupon_value FROM coupons_meetups WHERE cellphone IS NULL ORDER BY id ASC LIMIT 1", [], (err, result) => {
                 if (err) throw err;
                 
                 if(result.rows.length < 1) {
@@ -75,7 +78,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
                     from: value.to,
                     to: value.from,
                     content: {
-                      text: `We have run out of coupons, please chat to someone at the booth`,
+                      text: `We have run out of coupons, please chat to someone from the Infobip Developer Relations team`,
                     },
                   });
                   client.end((err) => {
@@ -83,8 +86,8 @@ app.post('/inbound', jsonParser, async (req, res) => {
                   });
                 } else {
                   const row = result.rows[0];
-                  client.query("UPDATE coupons SET cellphone = $1 WHERE id = $2", [cellphone, row.id], (err, result) => {
-                    sendCoupon (value, row.coupon);
+                  client.query("UPDATE coupons_meetups SET cellphone = $1 WHERE id = $2", [cellphone, row.id], (err, result) => {
+                    sendCoupon (value, row.coupon, row.coupon_value);
                     client.end((err) => {
                       if (err) throw err;
                     });
