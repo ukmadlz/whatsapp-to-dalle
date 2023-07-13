@@ -96,7 +96,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
               });
             } else {
               const row = result.rows[0];
-              sendCoupon (value, row.coupon);
+              sendCoupon (value, row.coupon, row.coupon_value);
               client.end((err) => {
                 if (err) throw err;
               });
