@@ -50,6 +50,7 @@ app.post('/inbound', jsonParser, async (req, res) => {
       if(process.env.DATABASE_URL && (
         content == "Hey Infobip! I’d like $100 of Infobip credits, please"
         || content.toLowerCase() == "coupon please"
+        || content.toLowerCase() == "coupon"
       )) {
         const connectionUrl = new URL(process.env.DATABASE_URL);
         connectionUrl.search = "";
