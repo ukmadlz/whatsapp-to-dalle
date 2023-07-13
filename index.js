@@ -103,6 +103,24 @@ app.post('/inbound', jsonParser, async (req, res) => {
             }
           });
         });
+      } else if (content.toLowerCase() == 'discord') {
+        await infobip.channels.whatsapp.send({
+          type: 'text',
+          from: value.to,
+          to: value.from,
+          content: {
+            text: `You can join the Infobip Discord at https://discord.com/invite/G9Gr6fk2e4`,
+          },
+        });
+      } else if (content.toLowerCase() == 'infobip') {
+        await infobip.channels.whatsapp.send({
+          type: 'text',
+          from: value.to,
+          to: value.from,
+          content: {
+            text: `You can get more information about Infobip at https://www.infobip.com/developers/`,
+          },
+        });
       } else {
         // Dall-e doesn't accept prompts over 1000
         if(content.length > 1000) {
