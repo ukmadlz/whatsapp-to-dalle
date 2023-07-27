@@ -45,10 +45,21 @@ app.post('/inbound', jsonParser, async (req, res) => {
           },
         });
       }
+      const getOpenAIImage = async (content) => {
+        const response = await openai.createImage({
+          prompt: content,
+          n: 1,
+          size: "512x512",
+        });
+        return response.data.data[0].url;
+      }
       await infobip.channels.whatsapp.markAsRead(value.to, value.messageId);
       const content = value.message.text;
       if(process.env.DATABASE_URL && (
         content == "Hey Infobip! I’d like $100 of Infobip credits, please"
+        || content == "Hey Infobip! I'd like $100 of Infobip credits, please"
+        || content == "Hey Infobip! I’d like some Infobip credits, please"
+        || content == "Hey Infobip! I'd like some Infobip credits, please"
         || content.toLowerCase() == "coupon please"
         || content.toLowerCase() == "coupon"
       )) {
@@ -149,20 +160,10 @@ app.post('/inbound', jsonParser, async (req, res) => {
         if(searchResult.total_count<1) {
           // Generate image
           try {
-            const response = await openai.createImage({
-              prompt: content,
-              n: 1,
-              size: "512x512",
-            });
-            image_url = response.data.data[0].url;
+            image_url = await getOpenAIImage(content);
           } catch (err) {
             console.error(err);
-            const response = await openai.createImage({
-              prompt: 'random rick astley',
-              n: 1,
-              size: "512x512",
-            });
-            image_url = response.data.data[0].url;
+            image_url = await getOpenAIImage('random rick astley');
           }
           // Upload to Cloudinary
           await cloudinary.v2.uploader.upload(image_url, {
