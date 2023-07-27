@@ -54,14 +54,6 @@ app.post('/inbound', jsonParser, async (req, res) => {
         return response.data.data[0].url;
       }
       await infobip.channels.whatsapp.markAsRead(value.to, value.messageId);
-      await infobip.channels.whatsapp.send({
-        type: 'text',
-        from: value.to,
-        to: value.from,
-        content: {
-          text: 'Thank you for coming to the booth, and please check out the amazing brewery that provided our beer https://strassenbraeu.de',
-        },
-      });
       const content = value.message.text;
       if(process.env.DATABASE_URL && (
         content == "Hey Infobip! I’d like $100 of Infobip credits, please"
