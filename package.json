@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@infobip-api/sdk": "^0.2.0",
+    "ably": "^1.2.47",
     "body-parser": "^1.20.2",
     "cloudinary": "^1.37.0",
     "dotenv": "^16.0.3",

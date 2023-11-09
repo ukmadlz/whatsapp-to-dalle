@@ -5,9 +5,11 @@ const pg = require('pg');
 const path = require('path');
 const { Infobip, AuthType } =  require('@infobip-api/sdk');
 const { Configuration, OpenAIApi } = require('openai');
+const Ably = require('ably');
 dotenv.config();
 
 const cloudinary = require('cloudinary');
+const ably = new Ably.Rest.Promise({ key: process.env.ABLY_API_KEY });
 
 const app = express()
 
@@ -173,6 +175,14 @@ app.post('/inbound', jsonParser, async (req, res) => {
         }
         // Get the Cloudinary URL
         imageUrl = await cloudinary.v2.url(publicId)
+        // Send to ably
+        const channel = await ably.channels.get("bashing-bots-together");
+        channel.publish(
+          "image",
+          JSON.stringify({
+            imageUrl
+          }),
+        );
         // Send back to WhatsApp user
         return await infobip.channels.whatsapp.send({
           type: 'image',
